@@ -10,6 +10,8 @@ import {
 import { UsersService } from './users.service';
 
 import { CreateUserDto } from './dto/create-user.dto';
+import { ParseIntPipe } from '@nestjs/common';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -17,12 +19,17 @@ export class UsersController {
 
   @Get()
   getUsers() {
-    return this.usersService.findAll();
+    return {
+      success: true,
+      data: this.usersService.findAll(),
+    };
   }
-
   @Get(':id')
-  getUser(@Param('id') id: string) {
-    return this.usersService.findOne(Number(id));
+  getUser(@Param('id', ParseIntPipe) id: number) {
+    return {
+      success: true,
+      data: this.usersService.findOne(id),
+    };
   }
 
   @Post()
@@ -31,12 +38,15 @@ export class UsersController {
   }
 
   @Patch(':id')
-  updateUser(@Param('id') id: string, @Body('name') name: string) {
-    return this.usersService.update(Number(id), name);
+  updateUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.usersService.update(id, updateUserDto.name);
   }
 
   @Delete(':id')
-  deleteUser(@Param('id') id: string) {
-    return this.usersService.delete(Number(id));
+  deleteUser(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.delete(id);
   }
 }

@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { User } from './interfaces/user.interface';
 
 @Injectable()
 export class UsersService {
@@ -7,16 +8,22 @@ export class UsersService {
     { id: 2, name: 'Amit' },
   ];
 
-  findAll() {
+  findAll(): User[] {
     return this.users;
   }
 
-  findOne(id: number) {
-    return this.users.find((user) => user.id === id);
+  findOne(id: number): User {
+    const user = this.users.find((user) => user.id === id);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
   }
 
-  create(name: string) {
-    const newUser = {
+  create(name: string): User {
+    const newUser: User = {
       id: Date.now(),
       name,
     };
@@ -25,30 +32,25 @@ export class UsersService {
     return newUser;
   }
 
-  update(id: number, name: string) {
-    const user = this.users.find((user) => user.id === id);
+  update(id: number, name?: string): User {
+    const user = this.findOne(id);
 
-    if (!user) {
-      throw new NotFoundException('User not found');
+    if (name) {
+      user.name = name;
     }
 
-    user.name = name;
     return user;
   }
 
-  delete(id: number) {
+  delete(id: number): { message: string } {
     const index = this.users.findIndex((user) => user.id === id);
 
     if (index === -1) {
       throw new NotFoundException('User not found');
     }
 
-    const deletedUser = this.users[index];
     this.users.splice(index, 1);
 
-    return {
-      message: 'User deleted successfully',
-      deletedUser,
-    };
+    return { message: 'User deleted successfully' };
   }
 }
