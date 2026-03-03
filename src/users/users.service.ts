@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './interfaces/user.interface';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -32,11 +33,11 @@ export class UsersService {
     return newUser;
   }
 
-  update(id: number, name?: string): User {
+  update(id: number, updateUserDto: UpdateUserDto): User {
     const user = this.findOne(id);
 
-    if (name) {
-      user.name = name;
+    if (updateUserDto.name !== undefined) {
+      user.name = updateUserDto.name;
     }
 
     return user;
